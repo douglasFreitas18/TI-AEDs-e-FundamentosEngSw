@@ -1,20 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
-
-// Truque para iniciantes: Incluir o arquivo .c diretamente
-// Isso faz o compilador juntar tudo num arquivo só automaticamente
 #include "biblioteca.c"
 
 void mostrar_menu() {
     printf("\n========================================\n");
     printf("      HOTEL DESCANSO GARANTIDO\n");
     printf("========================================\n");
+    printf("--- GESTAO DE PESSOAS ---\n");
     printf("1. Cadastrar Cliente\n");
     printf("2. Pesquisar Cliente\n");
     printf("3. Cadastrar Funcionario\n");
     printf("4. Pesquisar Funcionario\n");
+    printf("\n--- GESTAO DE QUARTOS E ESTADIAS ---\n");
     printf("5. Cadastrar Quarto\n");
+    printf("6. Cadastrar Estadia\n");
+    printf("7. Pesquisar Estadias do Cliente\n");
+    printf("8. Dar Baixa em Estadia\n");
+    printf("9. Calcular Pontos de Fidelidade\n");
     printf("----------------------------------------\n");
     printf("0. Sair\n");
     printf("========================================\n");
@@ -22,7 +25,6 @@ void mostrar_menu() {
 }
 
 int main() {
-    // Configura para aceitar acentos (pode variar conforme o sistema, mas ajuda)
     setlocale(LC_ALL, "Portuguese");
 
     int opcao;
@@ -30,7 +32,7 @@ int main() {
     do {
         mostrar_menu();
         scanf("%d", &opcao);
-        limpar_buffer(); // Função que criamos lá no biblioteca.c
+        limpar_buffer();
 
         switch (opcao) {
             case 1:
