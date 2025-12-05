@@ -48,6 +48,18 @@ int main() {
             case 5:
                 cadastrar_quarto();
                 break;
+            case 6:
+                cadastrar_estadia(); 
+                break;
+            case 7: 
+                pesquisar_estadias_cliente(); 
+                break;
+            case 8: 
+                dar_baixa_estadia(); 
+                break;
+            case 9:
+                calcular_pontos_fidelidade(); 
+                break;
             case 0:
                 printf("Saindo do sistema... Ate logo!\n");
                 break;
