@@ -2,23 +2,37 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define ARQ_CLIENTES "clientes.bin"
-#define ARQ_FUNCIONARIOS "funcionarios.bin"
-#define ARQ_QUARTOS "quartos.bin"
-#define ARQ_ESTADIAS "estadias.bin"
+
+#define MAX_NOME 100
+#define MAX_ENDERECO 150
+#define MAX_TELEFONE 20
+#define MAX_CARGO 50
+
+
+#define ARQ_CLIENTES "dados/clientes.bin"
+#define ARQ_FUNCIONARIOS "dados/funcionarios.bin"
+#define ARQ_QUARTOS "dados/quartos.bin"
+#define ARQ_ESTADIAS "dados/estadias.bin"
+
+
+typedef struct {
+    int dia;
+    int mes;
+    int ano;
+} Data;
 
 typedef struct {
     int codigo;
-    char nome[100];
-    char endereco[150];
-    char telefone[20];
+    char nome[MAX_NOME];
+    char endereco[MAX_ENDERECO];
+    char telefone[MAX_TELEFONE];
 } Cliente;
 
 typedef struct {
     int codigo;
-    char nome[100];
-    char telefone[20];
-    char cargo[50];
+    char nome[MAX_NOME];
+    char telefone[MAX_TELEFONE];
+    char cargo[MAX_CARGO];
     double salario;
 } Funcionario;
 
@@ -26,12 +40,8 @@ typedef struct {
     int numero;
     int quantidade_hospedes;
     double valor_diaria;
-    int status;
+    int status; 
 } Quarto;
-
-typedef struct {
-    int dia, mes, ano;
-} Data;
 
 typedef struct {
     int codigo_estadia;
@@ -42,3 +52,9 @@ typedef struct {
     int numero_quarto;
     int status_estadia;
 } Estadia;
+
+
+void limpar_buffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
