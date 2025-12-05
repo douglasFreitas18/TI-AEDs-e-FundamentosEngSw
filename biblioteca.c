@@ -259,7 +259,7 @@ void cadastrar_quarto() {
     printf("Valor da diaria: ");
     scanf("%lf", &q.valor_diaria);
     
-    q.status = 0; // ComeÃ§a sempre Desocupado
+    q.status = 0;
 
     FILE *file = fopen(ARQ_QUARTOS, "ab");
     if (file == NULL) {
@@ -269,4 +269,134 @@ void cadastrar_quarto() {
     fwrite(&q, sizeof(Quarto), 1, file);
     fclose(file);
     printf("Quarto cadastrado com sucesso!\n");
+}
+
+
+#include <time.h>
+
+
+time_t converter_para_time(Data d) {
+    struct tm t = {0};
+    t.tm_year = d.ano - 1900; 
+    t.tm_mon = d.mes - 1;     
+    t.tm_mday = d.dia;
+    t.tm_isdst = -1;          
+    return mktime(&t);
+}
+
+
+int calcular_dias(Data entrada, Data saida) {
+    time_t t_ent = converter_para_time(entrada);
+    time_t t_sai = converter_para_time(saida);
+    
+    double segundos = difftime(t_sai, t_ent);
+    return (int)(segundos / (60 * 60 * 24)); 
+}
+
+int verifica_sobreposicao_datas(Data nova_ent, Data nova_sai, Data antiga_ent, Data antiga_sai) {
+    time_t ne = converter_para_time(nova_ent);
+    time_t ns = converter_para_time(nova_sai);
+    time_t ae = converter_para_time(antiga_ent);
+    time_t as = converter_para_time(antiga_sai);
+
+    if (ne < as && ns > ae) {
+        return 1; 
+    }
+    return 0; 
+}
+
+// =============================================================
+// MÓDULO DE BAIXA E PESQUISA (Responsável: Douglas)
+// =============================================================
+
+void pesquisar_estadias_cliente() {
+    int cod_cli;
+    printf("Digite o codigo do cliente: ");
+    scanf("%d", &cod_cli);
+    
+    FILE *f = fopen(ARQ_ESTADIAS, "rb");
+    if (!f) { printf("Nenhuma estadia cadastrada.\n"); return; }
+    
+    Estadia e;
+    int achou = 0;
+    printf("\n--- HISTORICO DE ESTADIAS ---\n");
+    while(fread(&e, sizeof(Estadia), 1, f)) {
+        if (e.codigo_cliente == cod_cli) {
+            printf("Estadia #%d | Quarto: %d | Dias: %d | Status: %s\n", 
+                   e.codigo_estadia, e.numero_quarto, e.quantidade_diarias,
+                   (e.status_estadia == 1 ? "ATIVA" : "FINALIZADA"));
+            achou = 1;
+        }
+    }
+    fclose(f);
+    if(!achou) printf("Cliente nunca se hospedou aqui.\n");
+}
+
+double buscar_valor_diaria(int num_quarto) {
+    FILE *f = fopen(ARQ_QUARTOS, "rb");
+    Quarto q;
+    while(fread(&q, sizeof(Quarto), 1, f)) {
+        if (q.numero == num_quarto) {
+            fclose(f);
+            return q.valor_diaria;
+        }
+    }
+    fclose(f);
+    return 0.0;
+}
+
+void dar_baixa_estadia() {
+    int cod_estadia;
+    printf("Digite o codigo da estadia para dar baixa: ");
+    scanf("%d", &cod_estadia);
+
+    FILE *f = fopen(ARQ_ESTADIAS, "rb+");
+    if (!f) { printf("Erro no arquivo.\n"); return; }
+
+    Estadia e;
+    int achou = 0;
+    while(fread(&e, sizeof(Estadia), 1, f)) {
+        if (e.codigo_estadia == cod_estadia) {
+            if (e.status_estadia == 0) {
+                printf("Essa estadia ja foi finalizada!\n");
+                fclose(f);
+                return;
+            }
+
+            double valor_dia = buscar_valor_diaria(e.numero_quarto);
+            double total = valor_dia * e.quantidade_diarias;
+            
+            e.status_estadia = 0;
+            
+            fseek(f, -sizeof(Estadia), SEEK_CUR);
+            fwrite(&e, sizeof(Estadia), 1, f);
+            achou = 1;
+
+            printf("\n--- CHECK-OUT REALIZADO ---\n");
+            printf("Total a pagar: R$ %.2f\n", total);
+            printf("Pontos de fidelidade ganhos: %d\n", e.quantidade_diarias * 10);
+            break;
+        }
+    }
+    fclose(f);
+    if (!achou) printf("Estadia nao encontrada.\n");
+}
+
+void calcular_pontos_fidelidade() {
+    int cod_cli;
+    printf("Codigo do Cliente: ");
+    scanf("%d", &cod_cli);
+    
+    FILE *f = fopen(ARQ_ESTADIAS, "rb");
+    if(!f) return;
+    
+    Estadia e;
+    int pontos = 0;
+    while(fread(&e, sizeof(Estadia), 1, f)) {
+        if (e.codigo_cliente == cod_cli) {
+            pontos += (e.quantidade_diarias * 10);
+        }
+    }
+    fclose(f);
+    printf("O cliente tem um total de %d pontos de fidelidade.\n", pontos);
 }
