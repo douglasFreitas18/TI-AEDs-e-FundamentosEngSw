@@ -18,7 +18,7 @@ static MunitResult teste_calculo_dias(const MunitParameter params[], void* data)
     munit_assert_int(dias, ==, 4);
 
     int dias_erro = calcular_dias(saida, entrada);
-    munit_assert_int(dias_erro, <, 0); // Deve dar negativo
+    munit_assert_int(dias_erro, <, 0); 
 
     return MUNIT_OK;
 }
