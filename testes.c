@@ -1,6 +1,6 @@
-#include "munit.h"
+#include "munit.c"
 #include <unistd.h>
-#include "biblioteca.c" 
+#include "biblioteca.c"
 
 static void* setup(const MunitParameter params[], void* user_data) {
     return NULL;
@@ -12,14 +12,14 @@ static void tear_down(void* fixture) {
 static MunitResult teste_calculo_dias(const MunitParameter params[], void* data) {
     Data entrada = {1, 1, 2024};
     Data saida = {5, 1, 2024};
-    
+
     int dias = calcular_dias(entrada, saida);
-    
+
     munit_assert_int(dias, ==, 4);
 
     int dias_erro = calcular_dias(saida, entrada);
     munit_assert_int(dias_erro, <, 0); // Deve dar negativo
-    
+
     return MUNIT_OK;
 }
 
@@ -49,7 +49,7 @@ static MunitResult teste_persistencia_cliente(const MunitParameter params[], voi
     unlink(ARQ_CLIENTES);
 
     Cliente c_teste = {999, "Cliente Teste Automatizado", "Rua CPU", "0000-0000"};
-    
+
     FILE *f = fopen(ARQ_CLIENTES, "wb");
     munit_assert_not_null(f);
     fwrite(&c_teste, sizeof(Cliente), 1, f);
